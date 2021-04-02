@@ -1,11 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import nfetch = require("node-fetch");
-import {
-  websiteBaseUrl,
-  gitbookSpaceID,
-  gitbookToken,
-  gitbookBaseUrl,
-} from "../constants";
+import fetch from "node-fetch";
 
 interface Item {
   title: string;
@@ -13,30 +7,31 @@ interface Item {
   sections: Array<unknown>;
   uid: string;
 }
-module.exports = {
+export default {
   slash: "both",
   testOnly: false,
   guildOnly: true,
-  description: "Searches the II wiki",
+  description: "Searches the India Investments wiki",
   minArgs: 1,
   expectedArgs: "<query> [number]",
   callback: async ({ args, message }) => {
     const [query, number] = args;
     const maxNum = number || 10;
-    const result = await nfetch(
-      `${gitbookBaseUrl}/spaces/${gitbookSpaceID}/search?query=${query}`,
+    const result = await fetch(
+      `${process.env.GITBOOK_BASE_URL}/spaces/${process.env.GITBOOK_SPACE_ID}/search?query=${query}`,
       {
         headers: {
-          Authorization: `Bearer ${gitbookToken}`,
+          Authorization: `Bearer ${process.env.GITBOOK_TOKEN}`,
         },
       }
-    ).then((res) => res.json());
-    const results: Item[] = result["results"].slice(0, maxNum);
+    );
+    const resultJson = await result.json();
+    const results: Item[] = resultJson["results"].slice(0, maxNum);
 
     const embedItems = results.reduce<string[]>((pathIndice, item, index) => {
-      const entry = `${index + 1}. [${item.title}](${websiteBaseUrl}/${
-        item.url
-      })`;
+      const entry = `${index + 1}. [${item.title}](${
+        process.env.WEBSITE_BASE_URL
+      }/${item.url})`;
       pathIndice.push(entry);
       return pathIndice;
     }, []);

@@ -1,6 +1,7 @@
 import { Client } from "discord.js";
-import WOKCommands = require("wokcommands");
-import { discordToken } from "./constants";
+import WOKCommands from "wokcommands";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config();
 const client = new Client();
 
 client.on("ready", () => {
@@ -20,10 +21,9 @@ client.on("ready", () => {
     del: -1,
     ignoreBots: true,
     disabledDefaultCommands,
-    // testServers: ["806189763639902238"],
   })
     .setDefaultPrefix("!!")
     .setColor(0xff0000);
 });
 
-client.login(discordToken);
+client.login(process.env.DISCORD_TOKEN);
